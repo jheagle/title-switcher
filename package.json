@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/jheagle/title-switcher-v2#readme",
   "devDependencies": {
-    "js-build-tools": "^6.6.0",
+    "js-build-tools": "^6.9.0",
     "release-it": "^21.1.1",
     "typedoc": "^0.28.20"
   },
@@ -56,6 +56,7 @@
     "core-js": false,
     "core-js-pure": false,
     "@parcel/watcher": false,
-    "unrs-resolver": false
+    "unrs-resolver": false,
+    "esbuild": false
   }
 }
