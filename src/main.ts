@@ -22,8 +22,8 @@ class TitleSwitcher {
   #titlesContainer: HTMLElement | string = ''
   #switchStyle: switchTitleCallback
   #typeSurface: HTMLElement | null
-  cursorBlink: (blinkOn: boolean, self: TitleSwitcher) => TitleSwitcher
-  typingEffect: switchTitleCallback
+  declare cursorBlink: (blinkOn: boolean, self: TitleSwitcher) => TitleSwitcher
+  declare typingEffect: switchTitleCallback
 
   /**
    * Instantiate this as a class to get an instance of TitleSwitcher
