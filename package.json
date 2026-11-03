@@ -39,7 +39,8 @@
   },
   "homepage": "https://github.com/jheagle/title-switcher-v2#readme",
   "devDependencies": {
-    "js-build-tools": "^7.0.0",
+    "@babel/core": "^8.1.0",
+    "js-build-tools": "^8.0.0",
     "release-it": "^21.1.1",
     "typedoc": "^0.28.20"
   },
