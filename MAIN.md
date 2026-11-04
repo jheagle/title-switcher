@@ -1,4 +1,4 @@
-# [title-switcher-v2](https://www.npmjs.com/package/title-switcher)
+# [title-switcher](https://www.npmjs.com/package/title-switcher)
 
 This is the updated title-switcher which takes a simpler approach and improves many deficiencies of the original title-switcher.
 
