@@ -59,5 +59,8 @@
     "@parcel/watcher": false,
     "unrs-resolver": false,
     "esbuild": false
+  },
+  "dependencies": {
+    "core-js": "^3.51.0"
   }
 }
