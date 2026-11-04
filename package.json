@@ -30,14 +30,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jheagle/title-switcher-v2.git"
+    "url": "git+https://github.com/jheagle/title-switcher.git"
   },
   "author": "Joshua Heagle",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jheagle/title-switcher-v2/issues"
+    "url": "https://github.com/jheagle/title-switcher/issues"
   },
-  "homepage": "https://github.com/jheagle/title-switcher-v2#readme",
+  "homepage": "https://github.com/jheagle/title-switcher#readme",
   "devDependencies": {
     "@babel/core": "^8.1.0",
     "js-build-tools": "^8.0.0",
