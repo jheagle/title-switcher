@@ -241,14 +241,23 @@ class TitleSwitcher {
  * @param blinkOn
  * @param self
  */
+/**
+ * The cursor's markup: a bar while it's on, a non-breaking space of the same box while it's off (so the line
+ * doesn't shift). `color: inherit` lets it match the text it follows, on light and dark pages alike, and
+ * `data-cursor` marks it so a blink replaces it instead of adding another one.
+ * @param visible - Show the bar (true) or the blank (false).
+ */
+const cursorHtml = (visible: boolean): string =>
+  `<span data-cursor style="display: inline-block; font-weight: normal; color: inherit; text-decoration: none">${visible ? '&#124;' : '&nbsp;'}</span>`
+
 TitleSwitcher.prototype.cursorBlink = (blinkOn: boolean, self: TitleSwitcher): TitleSwitcher => {
-  // display cursor effect
+  // display cursor effect: swap the one cursor for its other state (there's only ever one; earlier versions added
+  // a new span on every blink and left the old ones behind, empty)
   self = self || this
-  if (blinkOn) {
-    self.typeSurface.innerHTML = self.typeSurface.innerHTML.replace(/\||&nbsp;*(<\/span>)?$/, '$1').trim()
-    self.typeSurface.innerHTML = self.typeSurface.innerHTML + '<span style="display: inline-block;font-weight: normal; color: black; text-decoration: none">&#124;</span>'
-  } else {
-    self.typeSurface.innerHTML = self.typeSurface.innerHTML.replace(/\|(<\/span>)$/, '&nbsp;$1')
+  const cursors = self.typeSurface.querySelectorAll('[data-cursor]')
+  Array.prototype.forEach.call(cursors, (cursor: Element) => cursor.parentNode && cursor.parentNode.removeChild(cursor))
+  if (blinkOn || cursors.length) {
+    self.typeSurface.insertAdjacentHTML('beforeend', cursorHtml(blinkOn))
   }
   return self
 }
@@ -379,11 +388,11 @@ TitleSwitcher.prototype.typingEffect = (domObject: HTMLElement | Element, callBa
       setTimeout(() => {
         // Reveal one more character, wrapped in whatever tags its position in the title falls under,
         // then append a formatted cursor on the end
-        self.typeSurface.innerHTML = typedPartialHtml(domObject, i + 1).html + '<span style="font-weight: normal; color: black; text-decoration: none">&#124;</span>'
+        self.typeSurface.innerHTML = typedPartialHtml(domObject, i + 1).html + cursorHtml(true)
         // If the text content equals the title content with a cursor appended then we reached the end.
         if (domObject.textContent + '|' === self.typeSurface.textContent) {
           // Replace html with old html on last letter, so we get all the html formatting applied
-          self.typeSurface.innerHTML = domObject.innerHTML + '<span style="font-weight: normal; color: black; text-decoration: none">&#124;</span>'
+          self.typeSurface.innerHTML = domObject.innerHTML + cursorHtml(true)
           // Run the blinking cursor two times the regular time in order to let the text be readable before switching
           for (let j = 0; j < numBlinks * 2; ++j) {
             setTimeout(() => {
