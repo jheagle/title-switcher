@@ -90,7 +90,7 @@ describe('TitleSwitcher', () => {
   })
 
   test('cursor blink adds and removes cursor', () => {
-    expect.assertions(5)
+    expect.assertions(7)
     document.body.innerHTML = '<div class=\'titles\'>\n' +
       '        <h4>One</h4>\n' +
       '        <h4>Two</h4>\n' +
@@ -102,6 +102,9 @@ describe('TitleSwitcher', () => {
     // Adds the cursor
     expect(titleSwitcher.typeSurface.innerHTML).toContain('|')
     expect(titleSwitcher.typeSurface.innerHTML).not.toContain('&nbsp;')
+    // The cursor takes the colour of the text around it, so it shows on light and dark pages alike
+    expect(titleSwitcher.typeSurface.innerHTML).toContain('color: inherit')
+    expect(titleSwitcher.typeSurface.innerHTML).not.toContain('color: black')
     titleSwitcher.cursorBlink(false, titleSwitcher)
     // Removes the cursor
     expect(titleSwitcher.typeSurface.innerHTML).not.toContain('|')
@@ -168,6 +171,26 @@ describe('TitleSwitcher', () => {
     expect(setTimeout).toHaveBeenCalledTimes(expectedTimes)
   })
 
+  test('blinking replaces the one cursor instead of adding more', () => {
+    document.body.innerHTML =
+      '<div class="titles">\n' +
+      '        <h4>One</h4>\n' +
+      '        <h4>Two</h4>\n' +
+      '    </div>'
+    const titleSwitcher = new TitleSwitcher('.titles')
+    titleSwitcher.startTitles({ immediatePause: true })
+    titleSwitcher.typeSurface.innerHTML = 'One'
+    for (let blink = 0; blink < 9; ++blink) {
+      titleSwitcher.cursorBlink(blink % 2 === 0, titleSwitcher)
+    }
+    // 9 blinks, ending on: one cursor, showing the bar, after the untouched text
+    expect(titleSwitcher.typeSurface.querySelectorAll('[data-cursor]').length).toBe(1)
+    expect(titleSwitcher.typeSurface.textContent).toBe('One|')
+    titleSwitcher.cursorBlink(false, titleSwitcher)
+    expect(titleSwitcher.typeSurface.querySelectorAll('[data-cursor]').length).toBe(1)
+    expect(titleSwitcher.typeSurface.textContent).toBe('One\u00a0')
+  })
+
   test('applies typingEffect, including adding html', done => {
     jest.spyOn(global, 'setTimeout')
     expect.assertions(5)
@@ -179,7 +202,8 @@ describe('TitleSwitcher', () => {
     titleSwitcher.startTitles({ immediatePause: true })
     expect(titleSwitcher.titles[1].className).toBe('displayTitle')
     expect(titleSwitcher.titles[2].className).toBeFalsy()
-    const endCursorBlink = '<span style="font-weight: normal; color: black; text-decoration: none"></span><span style="display: inline-block;font-weight: normal; color: black; text-decoration: none"></span><span style="display: inline-block;font-weight: normal; color: black; text-decoration: none">|</span>'
+    // One cursor, the bar showing (earlier versions left two empty cursor spans behind it from the blinks)
+    const endCursorBlink = '<span data-cursor="" style="display: inline-block; font-weight: normal; color: inherit; text-decoration: none">|</span>'
     titleSwitcher.typingEffect(titleSwitcher.titles[1], () => {
       // The first title has been placed with a cursor at the end
       expect(titleSwitcher.typeSurface.innerHTML).toBe(titleSwitcher.titles[1].innerHTML + endCursorBlink)
