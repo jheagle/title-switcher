@@ -1,6 +1,6 @@
 {
   "name": "title-switcher",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Add typing effect to titles and also switch through several titles.",
   "main": "dist/main.min.js",
   "types": "dist/main.d.ts",
