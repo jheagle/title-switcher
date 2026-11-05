@@ -302,6 +302,14 @@ const typedLength = (domObject: Node): number => {
  * @param domObject
  * @param remaining
  */
+/**
+ * Escape text for use inside HTML, so a title's text is shown as text. A text node's characters come back from
+ * textContent unescaped (`<`, `&`), so they must be escaped again before they're joined into markup for innerHTML;
+ * otherwise text like `<img src=x onerror=...>` became a real element (and ran), and `a < b` displayed wrongly.
+ * @param text - Plain text from a text node.
+ */
+const escapeHtml = (text: string): string => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
 const typedPartialHtml = (domObject: Node, remaining: number): { html: string; remaining: number } => {
   let html = ''
   const children = Array.prototype.slice.call(domObject.childNodes)
@@ -324,7 +332,7 @@ const typedPartialHtml = (domObject: Node, remaining: number): { html: string; r
         }
         --remaining
       }
-      html += taken
+      html += escapeHtml(taken)
     } else if (child.nodeType === 1) {
       const result = typedPartialHtml(child, remaining)
       if (result.html) {
