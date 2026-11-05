@@ -241,4 +241,41 @@ describe('TitleSwitcher', () => {
     jest.advanceTimersByTime('lo'.length * 200)
     expect(titleSwitcher.typeSurface.innerHTML).toContain('<em>hello</em>')
   })
+
+  test('types text that looks like HTML as text, never as markup', () => {
+    // A title's text comes back from textContent unescaped; joining it into innerHTML used to turn it into real
+    // elements, so this line created an <img> and ran its onerror, one letter at a time
+    window.typedHtmlRan = false
+    document.body.innerHTML = '<div class="titles"><h4>Safe</h4><h4></h4></div>'
+    document.querySelectorAll('.titles h4')[1].textContent = '<img src=x onerror="window.typedHtmlRan = true">'
+    const titleSwitcher = new TitleSwitcher('.titles')
+    titleSwitcher.startTitles({ immediatePause: true })
+    const title = titleSwitcher.titles[2]
+    titleSwitcher.typingEffect(title, () => titleSwitcher, titleSwitcher, true)
+    jest.runAllTimers()
+    expect(titleSwitcher.typeSurface.querySelectorAll('img').length).toBe(0)
+    expect(titleSwitcher.typeSurface.textContent).toBe(title.textContent + '|')
+    expect(window.typedHtmlRan).toBe(false)
+  })
+
+  test('shows < and & in a title correctly while typing, not just at the end', () => {
+    // The title's text is `x<b>y &lt;`: unescaped, `<b` opened a real <b> tag (swallowing the text) and the literal
+    // `&lt;` showed as `<`
+    document.body.innerHTML = '<div class="titles"><h4>One</h4><h4>x&lt;b&gt;y &amp;lt;</h4></div>'
+    const titleSwitcher = new TitleSwitcher('.titles')
+    titleSwitcher.startTitles({ immediatePause: true })
+    const title = titleSwitcher.titles[2]
+    const partials = []
+    titleSwitcher.typingEffect(title, () => titleSwitcher, titleSwitcher, true)
+    for (let step = 0; step < 60; ++step) {
+      jest.advanceTimersByTime(50)
+      partials.push(titleSwitcher.typeSurface.textContent.replace(/[|\u00a0]$/, ''))
+    }
+    // every partial is a prefix of the real text: nothing got swallowed as a tag or an entity
+    const typed = partials.filter(Boolean)
+    expect(typed.length).toBeGreaterThan(3)
+    typed.forEach(partial => expect('x<b>y &lt;'.startsWith(partial)).toBe(true))
+    expect(typed).toContain('x<b')
+    expect(titleSwitcher.typeSurface.querySelectorAll('b').length).toBe(0)
+  })
 })
