@@ -1,5 +1,7 @@
 # [title-switcher](https://www.npmjs.com/package/title-switcher)
 
+[![tests](https://github.com/jheagle/title-switcher/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/jheagle/title-switcher/actions/workflows/tests.yml)
+
 This is the updated title-switcher which takes a simpler approach and improves many deficiencies of the original title-switcher.
 
 Add typing effect to titles and also switch through several titles.
